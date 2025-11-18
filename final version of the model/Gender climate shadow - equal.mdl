@@ -1,0 +1,1020 @@
+{UTF-8}
+∂=8
+	~	Dmnl
+	~	Weight showing high impact of voting role on politician role.
+	|
+
+Rp=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=3.1 :OR: Case switch=\
+		3.2,
+	SQRT(DELAY1(Rv, 2*TIME STEP)) * (Spw * Ipw + (1-Spw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5 ,
+	SQRT(DELAY1(Rv, 2*TIME STEP)) * (Dynamic Spw * Ipw + (1-Dynamic Spw) * 0.5),
+	
+	IF THEN ELSE( Case switch=4,
+	IF THEN ELSE(Dynamic Svw < 0.5,
+	SQRT(DELAY1(Rv, 2*TIME STEP)) * (Spw * Ipw + (1 - Spw) * 0.5), (Scale parameter+∂)\
+		 * SQRT(DELAY1(Rv, 2*TIME STEP)) * (Spw * Ipw +
+	 (1 - Spw) * 0.5)
+	), 0)))
+	~	Dmnl
+	~	Variable representing the politician role. We use a default value of 0.5 \
+		for the male impact so that we only have to vary the exogenous female \
+		impact. INITIAL: Scale parameter * (Spw * Ipw + (1-Spw) * 0.5)
+	|
+
+E=IF THEN ELSE ( Case switch=1 :OR: Case switch=2 :OR:Case switch=4 :OR: Case switch=\
+		5 , 
+	( 1/SQRT(MAX (Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * E0 ,
+	
+	IF THEN ELSE ( Case switch=3, 0.774*( 1/SQRT(MAX(Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * E0 ,\
+		  
+	
+	IF THEN ELSE ( Case switch=3.1 , 0.915* ( 1/SQRT(MAX(Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * \
+		E0, 
+	
+	IF THEN ELSE ( Case switch=3.2, 0.845*( 1/SQRT(MAX(Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * E0\
+		 ,  
+	
+	0 ))))
+	~	tons of co2/Year
+	~	Emissions level
+	|
+
+Y0=INITIAL (Y )
+	~	USD
+	~	The role RV is dimensionless. However, Y has a unit of USD. To make Y \
+		dimensionless, we define Y0 with a unit of USD and divide Y by Y0 in the \
+		RV equation.
+	|
+
+Rc=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=4 :OR: Case switch=3.1\
+		 :OR: Case switch=3.2 , 
+	SQRT(SQRT(DELAY1(Rp, 2*TIME STEP)) * SQRT(DELAY1(Rl, 1*TIME STEP))) * (Scw * Icw + (\
+		1-Scw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2,
+	SQRT(SQRT(DELAY1(Rp, 2*TIME STEP)) * SQRT(DELAY1(Rl, 1 *TIME STEP))) * (Dynamic Scw \
+		* Icw + (1-Dynamic Scw) * 0.5), 
+		 
+	IF THEN ELSE( Case switch=5 ,
+	SQRT(SQRT(DELAY1(Rp, 2*TIME STEP)) * SQRT(DELAY1(Rl, 1*TIME STEP))) * (Dynamic Scw *\
+		 Icw* Y0/Y + (1-Dynamic Scw) * 0.5 ) , 
+	
+	0 )))
+	~	Dmnl
+	~	Variable representing the consumer role. We use a default value of 0.5 for \
+		the male impact so that we only have to vary the exogenous female impact. \
+		INITIAL: Scale parameter * (Scw * Icw + (1-Scw) * 0.5)
+	|
+
+Dynamic Svw=0.9
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		voting role.
+	|
+
+Dynamic Scw=0.9
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		consumer role.
+	|
+
+Dynamic Slw=0.9
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		life-style role.
+	|
+
+Rf=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=4 :OR: Case switch=3.1\
+		 :OR: Case switch=3.2, 
+	SQRT(SQRT(DELAY1(Rp, 5*TIME STEP)) * SQRT(DELAY1(Rc, 1*TIME STEP))) * (Sfw * Ifw + (\
+		1-Sfw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5 ,
+	SQRT(SQRT(DELAY1(Rp, 5*TIME STEP)) * SQRT(DELAY1(Rc, 1*TIME STEP))) * (Dynamic Sfw *\
+		 Ifw + (1-Dynamic Sfw) * 0.5), 0))
+	~	Dmnl
+	~	Variable representing the role of firm manager. We use a default value of \
+		0.5 for the male impact so that we only have to vary the exogenous female \
+		impact. INITIAL: Scale parameter * (Sfw * Ifw + (1-Sfw) * 0.5)
+	|
+
+Rl=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR:  Case switch=4 :OR: Case switch=3.1 ,
+	(Slw * Ilw + (1-Slw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5,
+	(Dynamic Slw * Ilw + (1-Dynamic Slw) * 0.5),
+	
+	IF THEN ELSE(Case switch=3 , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Slw * Ilw + (1-Slw) * 0.5),
+	
+	IF THEN ELSE( Case switch=3.2 , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Slw * Ilw + (1-Slw) * 0.5),
+	
+	 0))))
+	~	Dmnl
+	~	Variable representing the role of social influence on consumer behaviour \
+		(lifestyle role). We use a default value of 0.5 for the male impact so \
+		that we only have to vary the exogenous female impact.
+	|
+
+Ro=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR:  Case switch=4 :OR: Case switch=3.2 ,
+	(Sow * Iow + (1-Sow) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5,
+	(Dynamic Sow * Iow + (1-Dynamic Sow) * 0.5),
+	
+	IF THEN ELSE(Case switch=3  , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Sow * Iow + (1-Sow) * 0.5),
+	
+	IF THEN ELSE(Case switch=3.1 , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Sow * Iow + (1-Sow) * 0.5),
+	
+	 0))))
+	~	Dmnl
+	~	Variable representing the role of social influence on voting behaviour \
+		(opinion role). We use a default value of 0.5 for the male impact so that \
+		we only have to vary the exogenous female impact.
+	|
+
+Rv=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=3.1 :OR: Case switch=\
+		3.2 ,
+	SQRT(DELAY1(Ro, 3*TIME STEP)) * (Svw * Ivw + (1-Svw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=4,
+	SQRT(DELAY1(Ro, 3*TIME STEP)) * (Dynamic Svw * Ivw + (1-Dynamic Svw) * 0.5),
+	 
+	IF THEN ELSE( Case switch= 5 ,
+	SQRT(DELAY1(Ro, 3*TIME STEP)) * (Dynamic Svw * Ivw * Y/Y0 + (1-Dynamic Svw) * 0.5 ),
+	
+	 0 )))
+	~	Dmnl
+	~	Variable representing the voter role. We use a default value of 0.5 for \
+		the male impact so that we only have to vary the exogenous female impact. \
+		INITIAL: Scale parameter * (Svw * Ivw + (1-Svw) * 0.5)
+	|
+
+Scale parameter=20
+	~	Dmnl
+	~	Constant scale parameter for all the Role variables, which allows to scale \
+		all the R values simultaneously (assuring they are larger than 1) with one \
+		parameter.
+	|
+
+Y= ACTIVE INITIAL (Y0 * ( 0.8 * Rf + 0.2 * Rp)/ (0.8 * 74.482 + 0.2 * 57.5045),
+		1)
+	~	USD
+	~	Income variable.
+		Y0 * ( 0.8 * DELAY1I(Rf, 1,97) + 0.2 * DELAY1I(Rp, 1,77))/ (0.8 * 15.16 + \
+		0.2 * 5.72)
+	|
+
+E0=1
+	~	tons of co2/Year
+	~	In the equation for E, we have Rc and Rf, which are dimensionless, making \
+		E dimensionless as well. To assign a unit to E, we define E0 with the unit \
+		of tons of co2 and multiply the E equation by E0. As a result, E is now \
+		expressed in tons of co2.
+	|
+
+Dynamic Sfw=0.9
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		firm manager role.
+	|
+
+Dynamic Sow=0.9
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		opinion-influencer role.
+	|
+
+Dynamic Spw=0.9
+	~	Dmnl
+	~	Exogenous parameter representing the share of women within the politician \
+		role.
+	|
+
+Transition time=
+	10
+	~	Year
+	~	This auxiliary variable is added to make dynamic shares dimensionless. \
+		Dynamic shares have a unit of year due to time variable in their \
+		equations. In thir initial equation, we define the changes in shares over \
+		a 10-year period and use the digit 10 in their equations. for instance \
+		dynamic Sow= IF THEN ELSE(Time<=10, (0.1 + 0.4*Time)/10 , 0.5). We replace \
+		the digit 10 with the "Transition time" variable, IF THEN ELSE(Time<=10, \
+		(0.1 + 0.4*Time)/Transition time , 0.5). Now, Dynamic Sow is dmnl.
+	|
+
+CE= INTEG (E,
+		1)
+	~	tons of co2
+	~	Cumulative emissions
+	|
+
+Ivw=0.75
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the voting role. The male \
+		impact is fixed at 0.5, while female impact is defined in the range of \
+		[0,1]. If Ivw>0.5 (<) this means women have a stronger (weaker) impact 
+		than men.  0.699+ 0.001 * Y
+	|
+
+Icw=0.85
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the  consumer \
+		role. The male impact is fixed at 0.5, while female impact is defined in \
+		the range of [0,1]. If Icw>0.5 (<) this means women have a stronger \
+		(weaker) impact than men.  0.701 - 0.01 * Y
+	|
+
+Case switch=5
+	~	Dmnl [1,5]
+	~	Values 1 to 5 for distinct scenarios (see paper)
+	|
+
+CB=150
+	~	tons of co2
+	~	Carbon budget
+	|
+
+Svw=0.9
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the voting role.
+	|
+
+Sfw=0.9
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the firm \
+		manager role.
+	|
+
+Scw=0.9
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the consumer \
+		role.
+	|
+
+Sow=0.9
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the \
+		opinion-influencer role.
+	|
+
+Spw=0.9
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the politician \
+		role.
+	|
+
+Slw=0.9
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the life-style \
+		role.
+	|
+
+Ifw=0.75
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the  firm manager \
+		role . The male impact is fixed at 0.5, while female impact is defined in \
+		the range of [0,1]. If Ifw>0.5 (<) this means women have a stronger \
+		(weaker) impact than men.
+	|
+
+Ilw=0.85
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within life-style role. \
+		The male impact is fixed at 0.5, while female impact is defined in the \
+		range of [0,1]. If Iicw>0.5 (<) this means women have a stronger (weaker) \
+		impact than men.
+	|
+
+Iow=0.7
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the \
+		opinion-influencer role. The male impact is fixed at 0.5, while female \
+		impact is defined in the range of [0,1]. If Iivw>0.5 (<) this means women \
+		have a stronger (weaker) impact than men.
+	|
+
+Ipw=0.8
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the politician \
+		role. The male impact is fixed at 0.5, while female impact is defined in \
+		the range of [0,1]. If Ipw>0.5 (<) this means women have a stronger \
+		(weaker) impact than men.
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 50
+	~	Year
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Year
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Year [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Year [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,53,2
+10,1,Rl,958,332,25,31,8,3,0,30,-1,1,0,0,0-0-0,255-255-255,|22|B|255-0-0,0,0,0,0,0,0
+10,2,Ro,871,366,29,20,8,3,0,30,-1,1,0,0,-1--1--1,255-255-255,|22|B|255-0-0,0,0,0,0,0,0
+10,3,Rv,882,609,33,28,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+10,4,Rp,1117,610,29,28,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+10,5,Rf,1367,608,32,26,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+10,6,Rc,1352,316,29,25,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+1,7,2,3,1,0,0,13,0,193,0,-1--1--1,,1|(833,515)|
+1,8,4,6,1,0,0,13,1,65,0,0-0-0,|||0-0-0,1|(1231,384)|
+1,9,1,6,1,0,0,13,0,193,0,-1--1--1,,1|(1136,288)|
+10,10,Sow,689,313,42,19,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,11,Iow,686,348,42,22,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,12,Slw,913,161,42,22,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,13,Ilw,866,160,42,22,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,14,Scw,1447,156,26,15,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,15,Icw,1397,158,42,20,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,16,Svw,684,695,28,17,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,17,Ivw,677,661,22,16,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,18,Spw,1075,502,30,16,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,19,Ipw,1006,497,33,12,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,20,Sfw,1491,594,34,17,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,21,Ifw,1490,637,22,21,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+1,22,11,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,23,13,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,24,15,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,25,17,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,26,19,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,27,4,5,1,0,0,13,0,65,0,-1--1--1,,1|(1242,560)|
+1,28,6,5,1,0,0,13,0,193,0,-1--1--1,,1|(1409,414)|
+1,29,21,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,30,CE,1816,403,42,22,3,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|0-0-255,0,0,0,0,0,0
+12,31,48,1571,403,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,32,34,31,100,0,0,22,0,192,0,-1--1--1,,1|(1614,403)|
+1,33,34,30,4,0,0,22,0,192,0,-1--1--1,,1|(1717,403)|
+11,34,0,1654,403,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,35,E,1654,433,68,22,40,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|0-0-255,0,0,0,0,0,0
+1,36,6,34,1,0,0,13,0,192,0,-1--1--1,,1|(1494,329)|
+1,37,5,34,1,0,0,13,0,192,0,-1--1--1,,1|(1547,511)|
+1,38,3,4,1,0,0,13,1,193,0,0-0-0,|||0-0-0,1|(993,567)|
+1,39,16,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,40,18,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,41,10,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,42,12,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,43,14,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,44,20,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,45,CB,647,461,42,22,8,3,0,24,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,46,Case switch,586,602,41,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,47,46,3,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,48,Case switch,580,372,40,19,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+10,49,Case switch,956,75,39,16,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,50,30,1,1,0,0,13,1,193,0,0-128-0,|||0-0-0,1|(1294,465)|
+1,51,30,2,1,0,0,13,1,193,0,0-128-64,|||0-0-0,1|(1273,516)|
+1,52,45,1,1,0,0,13,1,192,0,128-0-128,|||0-0-0,1|(880,458)|
+1,53,48,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,54,49,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,55,45,2,1,0,0,13,1,192,0,128-0-128,|||0-0-0,1|(763,440)|
+10,56,Dynamic Sow,814,275,41,20,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,57,56,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,58,Dynamic Slw,1005,252,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,59,58,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,60,Dynamic Scw,1258,241,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+10,61,Dynamic Svw,820,713,31,21,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,62,61,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,63,Dynamic Spw,999,641,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+10,64,Dynamic Sfw,1239,635,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,65,64,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,66,Time,711,228,36,9,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,67,63,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,68,Case switch,1116,965,40,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,69,68,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,70,Time,1194,714,32,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,71,Case switch,1368,964,40,19,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,72,71,5,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,73,60,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,74,Case switch,1350,80,43,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,75,74,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+12,76,0,1450,1271,949,186,8,15,0,0,1,0,0,0,0,0,0,0,0,0
+test_table
+10,77,Time,1384,141,23,9,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,78,Y,999,898,42,22,8,3,0,24,-1,0,0,0,0-0-0,0-0-0,|22|B|0-0-0,0,0,0,0,0,0
+1,79,78,3,1,0,0,13,1,192,0,128-128-0,|||0-0-0,1|(941,791)|
+1,80,4,78,1,0,0,13,1,193,0,128-128-0,|||0-0-0,1|(1070,759)|
+1,81,5,78,1,0,0,13,1,193,0,128-128-0,|||0-0-0,1|(1238,791)|
+10,82,Transition time,761,200,64,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,83,Transition time,995,748,60,15,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,84,Y0,861,898,21,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,85,84,3,1,0,0,0,0,192,0,-1--1--1,,1|(880,776)|
+10,86,E0,1691,333,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,87,86,35,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,88,Y0,1472,270,37,28,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,89,88,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,90,Time,1230,279,29,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,91,Time,1017,773,29,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,92,84,78,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,93,Scale parameter,1141,356,67,14,8,3,0,39,-1,1,0,0,0-0-0,255-255-255,|||0-0-255,0,0,0,0,0,0
+1,94,93,2,1,0,0,2,0,192,0,-1--1--1,,1|(1001,391)|
+1,95,93,1,1,0,0,2,0,192,0,-1--1--1,,1|(1046,333)|
+1,96,93,6,1,0,0,2,0,192,0,-1--1--1,,1|(1240,324)|
+1,97,93,3,1,0,0,2,0,192,0,-1--1--1,,1|(1013,454)|
+1,98,93,4,1,0,0,2,0,192,0,-1--1--1,,1|(1115,460)|
+1,99,93,5,1,0,0,2,0,192,0,-1--1--1,,1|(1274,455)|
+10,100,Time,1049,147,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,101,Time,797,784,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,102,Transition time,1149,145,65,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,103,78,6,1,0,0,13,1,192,0,128-128-0,|||0-0-0,1|(1334,492)|
+1,104,78,84,1,0,0,0,0,192,1,-1--1--1,,1|(917,952)|
+10,105,∂,1254,875,45,23,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,106,105,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,107,61,4,1,0,0,0,0,64,0,-1--1--1,,1|(996,706)|
+10,108,TIME STEP,1554,284,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,109,108,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,110,TIME STEP,788,678,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,111,110,3,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,112,TIME STEP,1184,531,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,113,112,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,114,TIME STEP,1444,693,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,115,114,5,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,116,TIME STEP,884,278,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,117,116,1,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,118,TIME STEP,737,403,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,119,118,2,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,120,Case switch,1817,220,45,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,121,120,35,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+///---\\\
+:BAR-GRAPH rr
+:TITLE rr
+:BAR-TIME 0
+:AS-RUN Highly equal countries
+:VAR E|Highly equal countries
+:BAR-VAR-TIME 0
+:DATASET |Highly equal countries
+
+:TABLE scenario_1-_table-_USA
+:TITLE scenario_1-_table-_USA
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 1 - USA.vdfx
+:VAR Rl
+:DATASET Scenario 1 - USA.vdfx
+:VAR Rv
+:DATASET Scenario 1 - USA.vdfx
+:VAR Rp
+:DATASET Scenario 1 - USA.vdfx
+:VAR Rc
+:DATASET Scenario 1 - USA.vdfx
+:VAR Rf
+:DATASET Scenario 1 - USA.vdfx
+:VAR E
+:DATASET Scenario 1 - USA.vdfx
+:VAR CE
+:DATASET Scenario 1 - USA.vdfx
+
+:TABLE scenario_1-_table-_unequal
+:TITLE scenario_1-_table-_unequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 1 - unequal.vdfx
+:VAR Rl
+:DATASET Scenario 1 - unequal.vdfx
+:VAR Rv
+:DATASET Scenario 1 - unequal.vdfx
+:VAR Rp
+:DATASET Scenario 1 - unequal.vdfx
+:VAR Rc
+:DATASET Scenario 1 - unequal.vdfx
+:VAR Rf
+:DATASET Scenario 1 - unequal.vdfx
+:VAR E
+:DATASET Scenario 1 - unequal.vdfx
+:VAR CE
+:DATASET Scenario 1 - unequal.vdfx
+
+:TABLE scenario_1-_table-_equal
+:TITLE scenario_1-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 1 - equal.vdfx
+:VAR Rl
+:DATASET Scenario 1 - equal.vdfx
+:VAR Rv
+:DATASET Scenario 1 - equal.vdfx
+:VAR Rp
+:DATASET Scenario 1 - equal.vdfx
+:VAR Rc
+:DATASET Scenario 1 - equal.vdfx
+:VAR Rf
+:DATASET Scenario 1 - equal.vdfx
+:VAR E
+:DATASET Scenario 1 - equal.vdfx
+:VAR CE
+:DATASET Scenario 1 - equal.vdfx
+
+:TABLE scenario_2-_table-_USA
+:TITLE scenario_2-_table-_USA
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 2 - USA.vdfx
+:VAR Rl
+:DATASET Scenario 2 - USA.vdfx
+:VAR Rv
+:DATASET Scenario 2 - USA.vdfx
+:VAR Rp
+:DATASET Scenario 2 - USA.vdfx
+:VAR Rc
+:DATASET Scenario 2 - USA.vdfx
+:VAR Rf
+:DATASET Scenario 2 - USA.vdfx
+:VAR E
+:DATASET Scenario 2 - USA.vdfx
+:VAR CE
+:DATASET Scenario 2 - USA.vdfx
+
+:TABLE scenario_2-_table-_unequal
+:TITLE scenario_2-_table-_unequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 2 - unequal.vdfx
+:VAR Rl
+:DATASET Scenario 2 - unequal.vdfx
+:VAR Rv
+:DATASET Scenario 2 - unequal.vdfx
+:VAR Rp
+:DATASET Scenario 2 - unequal.vdfx
+:VAR Rc
+:DATASET Scenario 2 - unequal.vdfx
+:VAR Rf
+:DATASET Scenario 2 - unequal.vdfx
+:VAR E
+:DATASET Scenario 2 - unequal.vdfx
+:VAR CE
+:DATASET Scenario 2 - unequal.vdfx
+
+:TABLE scenario_2-_table-_equal
+:TITLE scenario_2-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 2 - equal.vdfx
+:VAR Rl
+:DATASET Scenario 2 - equal.vdfx
+:VAR Rv
+:DATASET Scenario 2 - equal.vdfx
+:VAR Rp
+:DATASET Scenario 2 - equal.vdfx
+:VAR Rc
+:DATASET Scenario 2 - equal.vdfx
+:VAR Rf
+:DATASET Scenario 2 - equal.vdfx
+:VAR E
+:DATASET Scenario 2 - equal.vdfx
+:VAR CE
+:DATASET Scenario 2 - equal.vdfx
+
+:TABLE scenario_3-_table-_usa
+:TITLE scenario_3-_table-_usa
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3 - USA.vdfx
+:VAR Rl
+:DATASET Scenario 3 - USA.vdfx
+:VAR Rv
+:DATASET Scenario 3 - USA.vdfx
+:VAR Rp
+:DATASET Scenario 3 - USA.vdfx
+:VAR Rc
+:DATASET Scenario 3 - USA.vdfx
+:VAR Rf
+:DATASET Scenario 3 - USA.vdfx
+:VAR E
+:DATASET Scenario 3 - USA.vdfx
+:VAR CE
+:DATASET Scenario 3 - USA.vdfx
+
+:TABLE scenario_3.1-_table-_usa
+:TITLE scenario_3.1-_table-_usa
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3.1 - USA.vdfx
+:VAR Rl
+:DATASET Scenario 3.1 - USA.vdfx
+:VAR Rv
+:DATASET Scenario 3.1 - USA.vdfx
+:VAR Rp
+:DATASET Scenario 3.1 - USA.vdfx
+:VAR Rc
+:DATASET Scenario 3.1 - USA.vdfx
+:VAR Rf
+:DATASET Scenario 3.1 - USA.vdfx
+:VAR E
+:DATASET Scenario 3.1 - USA.vdfx
+:VAR CE
+:DATASET Scenario 3.1 - USA.vdfx
+
+:TABLE scenario_3.2-_table-_usa
+:TITLE scenario_3.2-_table-_usa
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3.2 - USA.vdfx
+:VAR Rl
+:DATASET Scenario 3.2 - USA.vdfx
+:VAR Rv
+:DATASET Scenario 3.2 - USA.vdfx
+:VAR Rp
+:DATASET Scenario 3.2 - USA.vdfx
+:VAR Rc
+:DATASET Scenario 3.2 - USA.vdfx
+:VAR Rf
+:DATASET Scenario 3.2 - USA.vdfx
+:VAR E
+:DATASET Scenario 3.2 - USA.vdfx
+:VAR CE
+:DATASET Scenario 3.2 - USA.vdfx
+
+:TABLE scenario_3-_table-_unequal
+:TITLE scenario_3-_table-_unequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3 - unequal.vdfx
+:VAR Rl
+:DATASET Scenario 3 - unequal.vdfx
+:VAR Rv
+:DATASET Scenario 3 - unequal.vdfx
+:VAR Rp
+:DATASET Scenario 3 - unequal.vdfx
+:VAR Rc
+:DATASET Scenario 3 - unequal.vdfx
+:VAR Rf
+:DATASET Scenario 3 - unequal.vdfx
+:VAR E
+:DATASET Scenario 3 - unequal.vdfx
+:VAR CE
+:DATASET Scenario 3 - unequal.vdfx
+
+:TABLE scenario_3.1-_table-_uequal
+:TITLE scenario_3.1-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3.1 - unequal.vdfx
+:VAR Rl
+:DATASET Scenario 3.1 - unequal.vdfx
+:VAR Rv
+:DATASET Scenario 3.1 - unequal.vdfx
+:VAR Rp
+:DATASET Scenario 3.1 - unequal.vdfx
+:VAR Rc
+:DATASET Scenario 3.1 - unequal.vdfx
+:VAR Rf
+:DATASET Scenario 3.1 - unequal.vdfx
+:VAR E
+:DATASET Scenario 3.1 - unequal.vdfx
+:VAR CE
+:DATASET Scenario 3.1 - unequal.vdfx
+
+:TABLE scenario_3.2-_table-_uequal
+:TITLE scenario_3.2-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3.2 - unequal.vdfx
+:VAR Rl
+:DATASET Scenario 3.2 - unequal.vdfx
+:VAR Rv
+:DATASET Scenario 3.2 - unequal.vdfx
+:VAR Rp
+:DATASET Scenario 3.2 - unequal.vdfx
+:VAR Rc
+:DATASET Scenario 3.2 - unequal.vdfx
+:VAR Rf
+:DATASET Scenario 3.2 - unequal.vdfx
+:VAR E
+:DATASET Scenario 3.2 - unequal.vdfx
+:VAR CE
+:DATASET Scenario 3.2 - unequal.vdfx
+
+:TABLE scenario_3-_table-_equal
+:TITLE scenario_3-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3 - equal.vdfx
+:VAR Rl
+:DATASET Scenario 3 - equal.vdfx
+:VAR Rv
+:DATASET Scenario 3 - equal.vdfx
+:VAR Rp
+:DATASET Scenario 3 - equal.vdfx
+:VAR Rc
+:DATASET Scenario 3 - equal.vdfx
+:VAR Rf
+:DATASET Scenario 3 - equal.vdfx
+:VAR E
+:DATASET Scenario 3 - equal.vdfx
+:VAR CE
+:DATASET Scenario 3 - equal.vdfx
+
+:TABLE scenario_3.1-_table-_equal
+:TITLE scenario_3.1-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3.1 - equal.vdfx
+:VAR Rl
+:DATASET Scenario 3.1 - equal.vdfx
+:VAR Rv
+:DATASET Scenario 3.1 - equal.vdfx
+:VAR Rp
+:DATASET Scenario 3.1 - equal.vdfx
+:VAR Rc
+:DATASET Scenario 3.1 - equal.vdfx
+:VAR Rf
+:DATASET Scenario 3.1 - equal.vdfx
+:VAR E
+:DATASET Scenario 3.1 - equal.vdfx
+:VAR CE
+:DATASET Scenario 3.1 - equal.vdfx
+
+:TABLE scenario_3.2-_table-_equal
+:TITLE scenario_3.2-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 3.2 - equal.vdfx
+:VAR Rl
+:DATASET Scenario 3.2 - equal.vdfx
+:VAR Rv
+:DATASET Scenario 3.2 - equal.vdfx
+:VAR Rp
+:DATASET Scenario 3.2 - equal.vdfx
+:VAR Rc
+:DATASET Scenario 3.2 - equal.vdfx
+:VAR Rf
+:DATASET Scenario 3.2 - equal.vdfx
+:VAR E
+:DATASET Scenario 3.2 - equal.vdfx
+:VAR CE
+:DATASET Scenario 3.2 - equal.vdfx
+
+:TABLE scenario_4-_table-_uequal
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 4 - unequal.vdfx
+:VAR Rl
+:DATASET Scenario 4 - unequal.vdfx
+:VAR Rv
+:DATASET Scenario 4 - unequal.vdfx
+:VAR Rp
+:DATASET Scenario 4 - unequal.vdfx
+:VAR Rc
+:DATASET Scenario 4 - unequal.vdfx
+:VAR Rf
+:DATASET Scenario 4 - unequal.vdfx
+:VAR E
+:DATASET Scenario 4 - unequal.vdfx
+:VAR CE
+:DATASET Scenario 4 - unequal.vdfx
+
+:TABLE scenario_5-_table-_usa
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 5 - USA.vdfx
+:VAR Rl
+:DATASET Scenario 5 - USA.vdfx
+:VAR Rv
+:DATASET Scenario 5 - USA.vdfx
+:VAR Rp
+:DATASET Scenario 5 - USA.vdfx
+:VAR Rc
+:DATASET Scenario 5 - USA.vdfx
+:VAR Rf
+:DATASET Scenario 5 - USA.vdfx
+:VAR E
+:DATASET Scenario 5 - USA.vdfx
+:VAR CE
+:DATASET Scenario 5 - USA.vdfx
+:VAR Y
+:DATASET Scenario 5 - USA.vdfx
+
+:TABLE scenario_5-_table-_unequal
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 5 - unequal.vdfx
+:VAR Rl
+:DATASET Scenario 5 - unequal.vdfx
+:VAR Rv
+:DATASET Scenario 5 - unequal.vdfx
+:VAR Rp
+:DATASET Scenario 5 - unequal.vdfx
+:VAR Rc
+:DATASET Scenario 5 - unequal.vdfx
+:VAR Rf
+:DATASET Scenario 5 - unequal.vdfx
+:VAR E
+:DATASET Scenario 5 - unequal.vdfx
+:VAR CE
+:DATASET Scenario 5 - unequal.vdfx
+:VAR Y
+:DATASET Scenario 5 - unequal.vdfx
+
+:TABLE scenario_5-_table-_equal
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Scenario 5 - equal.vdfx
+:VAR Rl
+:DATASET Scenario 5 - equal.vdfx
+:VAR Rv
+:DATASET Scenario 5 - equal.vdfx
+:VAR Rp
+:DATASET Scenario 5 - equal.vdfx
+:VAR Rc
+:DATASET Scenario 5 - equal.vdfx
+:VAR Rf
+:DATASET Scenario 5 - equal.vdfx
+:VAR E
+:DATASET Scenario 5 - equal.vdfx
+:VAR CE
+:DATASET Scenario 5 - equal.vdfx
+:VAR Y
+:DATASET Scenario 5 - equal.vdfx
+
+:GRAPH scenario_2-_dynamic_shares-_usa
+:TITLE scenario_2-_dynamic_shares-_usa
+:FONT Vensim Sans|14||0-0-0
+:SCALE
+:VAR Dynamic Sow|Sow
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Slw|Slw
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Svw|Svw
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Spw|Spw
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Scw|Scw
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Sfw|Sfw
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2 - USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_2-_CE_comparison_of_scenario_2_and1_for_usa
+:TITLE scenario_2-_CE_comparison_of_scenario_2_and1_for_usa
+:FONT Vensim Sans|14||0-0-0
+:SCALE
+:VAR CE|CE (basic model)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 1 - USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|CE (Model with dynamic women's share)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 2 - USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_usa
+:TITLE scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_usa
+:SCALE
+:VAR CE|CE (basic model)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 1 - USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|CE (feedback from CE to Ro)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 3.1 - USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|CE (feedback from CE to Rl)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 3.2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|CE (feedback from CE to both Ro and Rl)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 3 - USA.vdfx
+:LINE-COLOR 0-0-0
+:LINE-WIDTH 3
+
+:GRAPH scenario_4-_dynamic_share_and_Rp_for_unequal
+:TITLE scenario_4-_dynamic_share_and_Rp_for_unequal
+:SCALE
+:VAR Rp|Rp (basic model)
+:UNITS Politicia role
+:DATASET Scenario 1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Rp (tipping point)
+:UNITS Politician role
+:DATASET Scenario 4 - unequal.vdfx
+:LINE-WIDTH 3
+:SCALE
+:VAR Dynamic Svw|Svw
+:UNITS Women's share in voting role
+:DATASET Scenario 4 - unequal.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_4-_CE_comparison_of_scenario_4_and1_for_unequal
+:TITLE scenario_4-_CE_comparison_of_scenario_4_and1_for_unequal
+:FONT Vensim Sans|14||0-0-0
+:SCALE
+:VAR CE|CE (basic model)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR CE|CE (Model with tipping point)
+:UNITS CE (Mt CO2)
+:DATASET Scenario 4 - unequal.vdfx
+:LINE-WIDTH 3
+:L<%^E!@
+1:Scenario 3- equal.vdfx
+1:Case 3 - equal.vdfx
+4:Time
+5:E
+9:Case 5 - equal
+19:53,0
+24:0
+25:50
+26:50
+23:0
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:0
+72:0
+73:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Vensim Sans|12||0-0-0|0-0-0|-1--1--1|0-0-0|192-192-192|-1--1--1

@@ -1,0 +1,1371 @@
+{UTF-8}
+∂=8
+	~	Dmnl
+	~	Weight showing high impact of voting role on politician role.
+	|
+
+Rp=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=3.1 :OR: Case switch=\
+		3.2,
+	SQRT(DELAY1(Rv, 2*TIME STEP)) * (Spw * Ipw + (1-Spw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5 ,
+	SQRT(DELAY1(Rv, 2*TIME STEP)) * (Dynamic Spw * Ipw + (1-Dynamic Spw) * 0.5),
+	
+	IF THEN ELSE( Case switch=4,
+	IF THEN ELSE(Dynamic Svw < 0.5,
+	SQRT(DELAY1(Rv, 2*TIME STEP)) * (Spw * Ipw + (1 - Spw) * 0.5), (Scale parameter+∂)\
+		 * SQRT(DELAY1(Rv, 2*TIME STEP)) * (Spw * Ipw +
+	 (1 - Spw) * 0.5)
+	), 0)))
+	~	Dmnl
+	~	Variable representing the politician role. We use a default value of 0.5 \
+		for the male impact so that we only have to vary the exogenous female \
+		impact.
+	|
+
+E=IF THEN ELSE ( Case switch=1 :OR: Case switch=2 :OR:Case switch=4 :OR: Case switch=\
+		5 , 
+	( 1/SQRT(MAX (Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * E0 ,
+	
+	IF THEN ELSE ( Case switch=3, 0.774*( 1/SQRT(MAX(Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * E0 ,\
+		  
+	
+	IF THEN ELSE ( Case switch=3.1 , 0.915* ( 1/SQRT(MAX(Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * \
+		E0, 
+	
+	IF THEN ELSE ( Case switch=3.2, 0.845*( 1/SQRT(MAX(Rc,1)) + 2/SQRT(MAX(Rf,1)) ) * E0\
+		 ,  
+	
+	0 ))))
+	~	tons of co2/Year
+	~	Annual emissions level
+	|
+
+Y0= INITIAL(Y)
+	~	USD
+	~	Initial value of income gap
+	|
+
+Rc=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=4 :OR: Case switch=3.1\
+		 :OR: Case switch=3.2 , 
+	SQRT(SQRT(DELAY1(Rp, 2*TIME STEP)) * SQRT(DELAY1(Rl, 1*TIME STEP))) * (Scw * Icw + (\
+		1-Scw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2,
+	SQRT(SQRT(DELAY1(Rp, 2*TIME STEP)) * SQRT(DELAY1(Rl, 1 *TIME STEP))) * (Dynamic Scw \
+		* Icw + (1-Dynamic Scw) * 0.5), 
+		 
+	IF THEN ELSE( Case switch=5 ,
+	SQRT(SQRT(DELAY1(Rp, 2*TIME STEP)) * SQRT(DELAY1(Rl, 1*TIME STEP))) * (Dynamic Scw *\
+		 Icw* Y0/Y + (1-Dynamic Scw) * 0.5 ) , 
+	
+	0 )))
+	~	Dmnl
+	~	Variable representing the consumer role. We use a default value of 0.5 for \
+		the male impact so that we only have to vary the exogenous female impact.
+	|
+
+Dynamic Svw=IF THEN ELSE(Time<=5, 0.1,
+			IF THEN ELSE(Time<=15, 0.1 + 0.4*(Time-5)/Transition time, 0.5))
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		voting role.
+	|
+
+Dynamic Scw=IF THEN ELSE(Time<=15, 0.1,
+			IF THEN ELSE(Time<=25, 0.1 + 0.4*(Time-15)/Transition time, 0.5))
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		consumer role.
+	|
+
+Dynamic Slw=IF THEN ELSE(Time<=10, 0.1 + 0.4*Time/Transition time , 0.5)
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		lifestyle-influencer role.
+	|
+
+Rf=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=4 :OR: Case switch=3.1\
+		 :OR: Case switch=3.2, 
+	SQRT(SQRT(DELAY1(Rp, 5*TIME STEP)) * SQRT(DELAY1(Rc, 1*TIME STEP))) * (Sfw * Ifw + (\
+		1-Sfw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5 ,
+	SQRT(SQRT(DELAY1(Rp, 5*TIME STEP)) * SQRT(DELAY1(Rc, 1*TIME STEP))) * (Dynamic Sfw *\
+		 Ifw + (1-Dynamic Sfw) * 0.5), 0))
+	~	Dmnl
+	~	Variable representing the role of firm-manager. We use a default value of \
+		0.5 for the male impact so that we only have to vary the exogenous female \
+		impact.
+	|
+
+Rl=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR:  Case switch=4 :OR: Case switch=3.1 ,
+	(Slw * Ilw + (1-Slw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5,
+	(Dynamic Slw * Ilw + (1-Dynamic Slw) * 0.5),
+	
+	IF THEN ELSE(Case switch=3 , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Slw * Ilw + (1-Slw) * 0.5),
+	
+	IF THEN ELSE( Case switch=3.2 , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Slw * Ilw + (1-Slw) * 0.5),
+	
+	 0))))
+	~	Dmnl
+	~	Variable representing the role of social influence on consumer behaviour \
+		(lifestyle-influencer role). We use a default value of 0.5 for the male \
+		impact so that we only have to vary the exogenous female impact.
+	|
+
+Ro=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR:  Case switch=4 :OR: Case switch=3.2 ,
+	(Sow * Iow + (1-Sow) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=5,
+	(Dynamic Sow * Iow + (1-Dynamic Sow) * 0.5),
+	
+	IF THEN ELSE(Case switch=3  , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Sow * Iow + (1-Sow) * 0.5),
+	
+	IF THEN ELSE(Case switch=3.1 , 
+	SQRT(DELAY1(CE/(MAX(CB-CE,1)), 3*TIME STEP)) * (Sow * Iow + (1-Sow) * 0.5),
+	
+	 0))))
+	~	Dmnl
+	~	Variable representing the role of social influence on voting behaviour \
+		(opinion-influencer role). We use a default value of 0.5 for the male \
+		impact so that we only have to vary the exogenous female impact.
+	|
+
+Rv=Scale parameter * 
+	
+	IF THEN ELSE(Case switch=1 :OR: Case switch=3 :OR: Case switch=3.1 :OR: Case switch=\
+		3.2 ,
+	SQRT(DELAY1(Ro, 3*TIME STEP)) * (Svw * Ivw + (1-Svw) * 0.5),
+	
+	IF THEN ELSE(Case switch=2 :OR: Case switch=4,
+	SQRT(DELAY1(Ro, 3*TIME STEP)) * (Dynamic Svw * Ivw + (1-Dynamic Svw) * 0.5),
+	 
+	IF THEN ELSE( Case switch= 5 ,
+	SQRT(DELAY1(Ro, 3*TIME STEP)) * (Dynamic Svw * Ivw * Y/Y0 + (1-Dynamic Svw) * 0.5 ),
+	
+	 0 )))
+	~	Dmnl
+	~	Variable representing the voter role. We use a default value of 0.5 for \
+		the male impact so that we only have to vary the exogenous female impact.
+	|
+
+Scale parameter=20
+	~	Dmnl
+	~	Constant scale parameter for all the role variables, which allows to scale \
+		all the R values simultaneously (assuring they are larger than 1) with one \
+		parameter.
+	|
+
+Y= ACTIVE INITIAL (Y0 * ( 0.8 * Rf + 0.2 * Rp)/ (0.8 * 74.482 + 0.2 * 57.5045),
+		1)
+	~	USD
+	~	Income gap variable.
+	|
+
+E0=1
+	~	tons of co2/Year
+	~	Initial value of emissions
+	|
+
+Dynamic Sfw=IF THEN ELSE(Time<=15, 0.1,
+			IF THEN ELSE(Time<=25, 0.1 + 0.4*(Time-15)/Transition time, 0.5))
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		firm-manager role.
+	|
+
+Dynamic Sow=IF THEN ELSE(Time<=10, 0.1 + 0.4*Time/Transition time , 0.5)
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		opinion-influencer role.
+	|
+
+Dynamic Spw=IF THEN ELSE(Time<=10, 0.1,
+			IF THEN ELSE(Time<=20, 0.1 + 0.4*(Time-10)/Transition time, 0.5))
+	~	Dmnl
+	~	Exogenous parameter representing the dynamic share of women within the \
+		politician role.
+	|
+
+Transition time=10
+	~	Year
+	~	A 10-year time horizon was applied to increase the share of women from \
+		below 0.5 to the target level of 0.5.
+	|
+
+CE= INTEG (E,
+		1)
+	~	tons of co2
+	~	Cumulative emissions
+	|
+
+Ivw=0.6
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the voting role. \
+		The male impact is fixed at 0.5, while female impact is defined in the \
+		range of [0,1]. If Ivw>0.5 (<) this means women have a stronger (weaker) \
+		impact than men.
+	|
+
+Icw=0.7
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the  consumer \
+		role. The male impact is fixed at 0.5, while female impact is defined in \
+		the range of [0,1]. If Icw>0.5 (<) this means women have a stronger \
+		(weaker) impact than men.
+	|
+
+Case switch=5
+	~	Dmnl [1,5]
+	~	Values 1 to 5 for distinct cases (see paper)
+	|
+
+CB=150
+	~	tons of co2
+	~	Carbon budget
+	|
+
+Svw=0.1
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the voting role.
+	|
+
+Sfw=0.1
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the \
+		firm-manager role.
+	|
+
+Scw=0.1
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the consumer \
+		role.
+	|
+
+Sow=0.1
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the \
+		opinion-influencer role.
+	|
+
+Spw=0.1
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the politician \
+		role.
+	|
+
+Slw=0.1
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing the share of women within the \
+		lifestyle-influencer role.
+	|
+
+Ifw=0.55
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the  firm-manager \
+		role . The male impact is fixed at 0.5, while female impact is defined in \
+		the range of [0,1]. If Ifw>0.5 (<) this means women have a stronger \
+		(weaker) impact than men.
+	|
+
+Ilw=0.7
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within \
+		lifestyle-influencer role. The male impact is fixed at 0.5, while female \
+		impact is defined in the range of [0,1]. If Ilw>0.5 (<) this means women \
+		have a stronger (weaker) impact than men.
+	|
+
+Iow=0.55
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the \
+		opinion-influencer role. The male impact is fixed at 0.5, while female \
+		impact is defined in the range of [0,1]. If Iow>0.5 (<) this means women \
+		have a stronger (weaker) impact than men.
+	|
+
+Ipw=0.55
+	~	Dmnl [0,1]
+	~	Exogenous parameter representing impact of women within the politician \
+		role. The male impact is fixed at 0.5, while female impact is defined in \
+		the range of [0,1]. If Ipw>0.5 (<) this means women have a stronger \
+		(weaker) impact than men.
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 50
+	~	Year
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Year
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Year [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP=1
+	~	Year [0,?]
+	~	The time step of the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,53,2
+10,1,Rl,958,362,25,31,8,3,0,30,-1,1,0,0,0-0-0,255-255-255,|22|B|255-0-0,0,0,0,0,0,0
+10,2,Ro,871,396,29,20,8,3,0,30,-1,1,0,0,-1--1--1,255-255-255,|22|B|255-0-0,0,0,0,0,0,0
+10,3,Rv,882,639,33,28,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+10,4,Rp,1117,640,29,28,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+10,5,Rf,1367,638,32,26,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+10,6,Rc,1352,346,29,25,8,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|255-0-0,0,0,0,0,0,0
+1,7,2,3,1,0,0,13,0,193,0,-1--1--1,,1|(833,545)|
+1,8,4,6,1,0,0,13,1,65,0,0-0-0,|||0-0-0,1|(1231,414)|
+1,9,1,6,1,0,0,13,0,193,0,-1--1--1,,1|(1136,318)|
+10,10,Sow,689,343,42,19,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,11,Iow,686,378,42,22,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,12,Slw,913,191,42,22,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,13,Ilw,866,190,42,22,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,14,Scw,1447,186,26,15,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,15,Icw,1397,188,42,20,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,16,Svw,684,725,28,17,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,17,Ivw,677,691,22,16,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,18,Spw,1075,532,30,16,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,19,Ipw,1006,527,33,12,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,20,Sfw,1491,624,34,17,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+10,21,Ifw,1490,667,22,21,8,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-128-255,0,0,0,0,0,0
+1,22,11,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,23,13,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,24,15,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,25,17,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,26,19,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,27,4,5,1,0,0,13,0,65,0,-1--1--1,,1|(1242,590)|
+1,28,6,5,1,0,0,13,0,193,0,-1--1--1,,1|(1409,444)|
+1,29,21,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,30,CE,1816,433,42,22,3,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|0-0-255,0,0,0,0,0,0
+12,31,48,1571,433,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,32,34,31,100,0,0,22,0,192,0,-1--1--1,,1|(1614,433)|
+1,33,34,30,4,0,0,22,0,192,0,-1--1--1,,1|(1717,433)|
+11,34,0,1654,433,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,35,E,1654,463,68,22,40,3,0,26,-1,1,0,0,0-0-0,0-0-0,|22|B|0-0-255,0,0,0,0,0,0
+1,36,6,34,1,0,0,13,0,192,0,-1--1--1,,1|(1494,359)|
+1,37,5,34,1,0,0,13,0,192,0,-1--1--1,,1|(1547,541)|
+1,38,3,4,1,0,0,13,1,193,0,0-0-0,|||0-0-0,1|(993,597)|
+1,39,16,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,40,18,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,41,10,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,42,12,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,43,14,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,44,20,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,45,CB,647,491,42,22,8,3,0,24,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,46,Case switch,586,632,41,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,47,46,3,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,48,Case switch,580,402,40,19,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+10,49,Case switch,956,105,39,16,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,50,30,1,1,0,0,13,1,193,0,0-128-0,|||0-0-0,1|(1294,495)|
+1,51,30,2,1,0,0,13,1,193,0,0-128-64,|||0-0-0,1|(1273,546)|
+1,52,45,1,1,0,0,13,1,192,0,128-0-128,|||0-0-0,1|(880,488)|
+1,53,48,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,54,49,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,55,45,2,1,0,0,13,1,192,0,128-0-128,|||0-0-0,1|(763,470)|
+10,56,Dynamic Sow,814,305,41,20,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,57,56,2,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,58,Dynamic Slw,1005,282,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,59,58,1,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,60,Dynamic Scw,1258,271,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+10,61,Dynamic Svw,820,743,31,21,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,62,61,3,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,63,Dynamic Spw,999,671,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+10,64,Dynamic Sfw,1239,665,42,22,8,3,0,2,-1,1,0,0,0-0-0,0-0-0,|||71-173-86,0,0,0,0,0,0
+1,65,64,5,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,66,Time,711,258,36,9,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,67,66,56,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,68,63,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,69,Case switch,1116,995,40,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,70,69,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,71,Time,1194,744,32,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,72,71,64,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,73,Case switch,1368,994,40,19,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,74,73,5,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,75,60,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,76,Case switch,1350,110,43,20,8,2,0,3,-1,1,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,77,76,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+12,78,0,1450,1301,949,186,8,15,0,0,1,0,0,0,0,0,0,0,0,0
+test_table
+10,79,Time,1384,171,23,9,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,80,Y,999,928,42,22,8,3,0,24,-1,0,0,0,0-0-0,0-0-0,|22|B|0-0-0,0,0,0,0,0,0
+1,81,80,3,1,0,0,13,1,192,0,128-128-0,|||0-0-0,1|(941,821)|
+1,82,4,80,1,0,0,13,1,193,0,128-128-0,|||0-0-0,1|(1070,789)|
+1,83,5,80,1,0,0,13,1,193,0,128-128-0,|||0-0-0,1|(1238,821)|
+10,84,Transition time,761,230,64,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,85,84,56,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,86,Transition time,995,778,60,15,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,87,86,63,1,0,0,0,0,192,0,-1--1--1,,1|(996,732)|
+10,88,Y0,861,928,21,12,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,89,88,3,1,0,0,0,0,192,0,-1--1--1,,1|(880,806)|
+10,90,E0,1691,363,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,91,90,35,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,92,Y0,1472,300,37,28,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,93,92,6,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,94,Time,1230,309,29,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,95,Time,1017,803,29,10,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,96,71,63,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,97,86,64,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,98,88,80,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,99,Scale parameter,1141,386,67,14,8,3,0,39,-1,1,0,0,0-0-0,255-255-255,|||0-0-255,0,0,0,0,0,0
+1,100,99,2,1,0,0,2,0,192,0,-1--1--1,,1|(1001,421)|
+1,101,99,1,1,0,0,2,0,192,0,-1--1--1,,1|(1046,363)|
+1,102,99,6,1,0,0,2,0,192,0,-1--1--1,,1|(1240,354)|
+1,103,99,3,1,0,0,2,0,192,0,-1--1--1,,1|(1013,484)|
+1,104,99,4,1,0,0,2,0,192,0,-1--1--1,,1|(1115,490)|
+1,105,99,5,1,0,0,2,0,192,0,-1--1--1,,1|(1274,485)|
+10,106,Time,1049,177,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,107,106,58,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,108,Time,797,814,29,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,109,108,61,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,110,86,61,1,0,0,0,0,192,0,-1--1--1,,1|(882,737)|
+10,111,Transition time,1149,175,65,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,112,111,58,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,113,111,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,114,106,60,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,115,80,6,1,0,0,13,1,192,0,128-128-0,|||0-0-0,1|(1334,522)|
+1,116,80,88,1,0,0,0,0,192,1,-1--1--1,,1|(917,982)|
+10,117,∂,1254,905,45,23,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,118,117,4,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,119,61,4,1,0,0,0,0,64,0,-1--1--1,,1|(996,736)|
+10,120,TIME STEP,1554,314,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,121,120,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,122,TIME STEP,788,708,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,123,122,3,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,124,TIME STEP,1184,561,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,125,124,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,126,TIME STEP,1444,723,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,127,126,5,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,128,TIME STEP,884,308,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,129,128,1,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,130,TIME STEP,737,433,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,131,130,2,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,132,Case switch,1817,250,45,26,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||255-128-64,0,0,0,0,0,0
+1,133,132,35,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+///---\\\
+:BAR-GRAPH rr
+:TITLE rr
+:BAR-TIME 0
+:AS-RUN Highly equal countries
+:VAR E|Highly equal countries
+:BAR-VAR-TIME 0
+:DATASET |Highly equal countries
+
+:TABLE scenario_1-_table-_USA
+:TITLE scenario_1-_table-_USA
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 1 - USA.vdfx
+:VAR Rl
+:DATASET Case 1 - USA.vdfx
+:VAR Rv
+:DATASET Case 1 - USA.vdfx
+:VAR Rp
+:DATASET Case 1 - USA.vdfx
+:VAR Rc
+:DATASET Case 1 - USA.vdfx
+:VAR Rf
+:DATASET Case 1 - USA.vdfx
+:VAR E
+:DATASET Case 1 - USA.vdfx
+:VAR CE
+:DATASET Case 1 - USA.vdfx
+
+:TABLE scenario_1-_table-_unequal
+:TITLE scenario_1-_table-_unequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 1 - unequal.vdfx
+:VAR Rl
+:DATASET Case 1 - unequal.vdfx
+:VAR Rv
+:DATASET Case 1 - unequal.vdfx
+:VAR Rp
+:DATASET Case 1 - unequal.vdfx
+:VAR Rc
+:DATASET Case 1 - unequal.vdfx
+:VAR Rf
+:DATASET Case 1 - unequal.vdfx
+:VAR E
+:DATASET Case 1 - unequal.vdfx
+:VAR CE
+:DATASET Case 1 - unequal.vdfx
+
+:TABLE scenario_1-_table-_equal
+:TITLE scenario_1-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 1 - equal.vdfx
+:VAR Rl
+:DATASET Case 1 - equal.vdfx
+:VAR Rv
+:DATASET Case 1 - equal.vdfx
+:VAR Rp
+:DATASET Case 1 - equal.vdfx
+:VAR Rc
+:DATASET Case 1 - equal.vdfx
+:VAR Rf
+:DATASET Case 1 - equal.vdfx
+:VAR E
+:DATASET Case 1 - equal.vdfx
+:VAR CE
+:DATASET Case 1 - equal.vdfx
+
+:TABLE scenario_2-_table-_USA
+:TITLE scenario_2-_table-_USA
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 2 - USA.vdfx
+:VAR Rl
+:DATASET Case 2 - USA.vdfx
+:VAR Rv
+:DATASET Case 2 - USA.vdfx
+:VAR Rp
+:DATASET Case 2 - USA.vdfx
+:VAR Rc
+:DATASET Case 2 - USA.vdfx
+:VAR Rf
+:DATASET Case 2 - USA.vdfx
+:VAR E
+:DATASET Case 2 - USA.vdfx
+:VAR CE
+:DATASET Case 2 - USA.vdfx
+
+:TABLE scenario_2-_table-_unequal
+:TITLE scenario_2-_table-_unequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 2 - unequal.vdfx
+:VAR Rl
+:DATASET Case 2 - unequal.vdfx
+:VAR Rv
+:DATASET Case 2 - unequal.vdfx
+:VAR Rp
+:DATASET Case 2 - unequal.vdfx
+:VAR Rc
+:DATASET Case 2 - unequal.vdfx
+:VAR Rf
+:DATASET Case 2 - unequal.vdfx
+:VAR E
+:DATASET Case 2 - unequal.vdfx
+:VAR CE
+:DATASET Case 2 - unequal.vdfx
+
+:TABLE scenario_3-_table-_usa
+:TITLE scenario_3-_table-_usa
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3 - USA.vdfx
+:VAR Rl
+:DATASET Case 3 - USA.vdfx
+:VAR Rv
+:DATASET Case 3 - USA.vdfx
+:VAR Rp
+:DATASET Case 3 - USA.vdfx
+:VAR Rc
+:DATASET Case 3 - USA.vdfx
+:VAR Rf
+:DATASET Case 3 - USA.vdfx
+:VAR E
+:DATASET Case 3 - USA.vdfx
+:VAR CE
+:DATASET Case 3 - USA.vdfx
+
+:TABLE scenario_3.1-_table-_usa
+:TITLE scenario_3.1-_table-_usa
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3.1 - USA.vdfx
+:VAR Rl
+:DATASET Case 3.1 - USA.vdfx
+:VAR Rv
+:DATASET Case 3.1 - USA.vdfx
+:VAR Rp
+:DATASET Case 3.1 - USA.vdfx
+:VAR Rc
+:DATASET Case 3.1 - USA.vdfx
+:VAR Rf
+:DATASET Case 3.1 - USA.vdfx
+:VAR E
+:DATASET Case 3.1 - USA.vdfx
+:VAR CE
+:DATASET Case 3.1 - USA.vdfx
+
+:TABLE scenario_3.2-_table-_usa
+:TITLE scenario_3.2-_table-_usa
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3.2 - USA.vdfx
+:VAR Rl
+:DATASET Case 3.2 - USA.vdfx
+:VAR Rv
+:DATASET Case 3.2 - USA.vdfx
+:VAR Rp
+:DATASET Case 3.2 - USA.vdfx
+:VAR Rc
+:DATASET Case 3.2 - USA.vdfx
+:VAR Rf
+:DATASET Case 3.2 - USA.vdfx
+:VAR E
+:DATASET Case 3.2 - USA.vdfx
+:VAR CE
+:DATASET Case 3.2 - USA.vdfx
+
+:TABLE scenario_3-_table-_unequal
+:TITLE scenario_3-_table-_unequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3 - unequal.vdfx
+:VAR Rl
+:DATASET Case 3 - unequal.vdfx
+:VAR Rv
+:DATASET Case 3 - unequal.vdfx
+:VAR Rp
+:DATASET Case 3 - unequal.vdfx
+:VAR Rc
+:DATASET Case 3 - unequal.vdfx
+:VAR Rf
+:DATASET Case 3 - unequal.vdfx
+:VAR E
+:DATASET Case 3 - unequal.vdfx
+:VAR CE
+:DATASET Case 3 - unequal.vdfx
+
+:TABLE scenario_3.1-_table-_uequal
+:TITLE scenario_3.1-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3.1 - unequal.vdfx
+:VAR Rl
+:DATASET Case 3.1 - unequal.vdfx
+:VAR Rv
+:DATASET Case 3.1 - unequal.vdfx
+:VAR Rp
+:DATASET Case 3.1 - unequal.vdfx
+:VAR Rc
+:DATASET Case 3.1 - unequal.vdfx
+:VAR Rf
+:DATASET Case 3.1 - unequal.vdfx
+:VAR E
+:DATASET Case 3.1 - unequal.vdfx
+:VAR CE
+:DATASET Case 3.1 - unequal.vdfx
+
+:TABLE scenario_3.2-_table-_uequal
+:TITLE scenario_3.2-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3.2 - unequal.vdfx
+:VAR Rl
+:DATASET Case 3.2 - unequal.vdfx
+:VAR Rv
+:DATASET Case 3.2 - unequal.vdfx
+:VAR Rp
+:DATASET Case 3.2 - unequal.vdfx
+:VAR Rc
+:DATASET Case 3.2 - unequal.vdfx
+:VAR Rf
+:DATASET Case 3.2 - unequal.vdfx
+:VAR E
+:DATASET Case 3.2 - unequal.vdfx
+:VAR CE
+:DATASET Case 3.2 - unequal.vdfx
+
+:TABLE scenario_3-_table-_equal
+:TITLE scenario_3-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3 - equal.vdfx
+:VAR Rl
+:DATASET Case 3 - equal.vdfx
+:VAR Rv
+:DATASET Case 3 - equal.vdfx
+:VAR Rp
+:DATASET Case 3 - equal.vdfx
+:VAR Rc
+:DATASET Case 3 - equal.vdfx
+:VAR Rf
+:DATASET Case 3 - equal.vdfx
+:VAR E
+:DATASET Case 3 - equal.vdfx
+:VAR CE
+:DATASET Case 3 - equal.vdfx
+
+:TABLE scenario_3.1-_table-_equal
+:TITLE scenario_3.1-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3.1 - equal.vdfx
+:VAR Rl
+:DATASET Case 3.1 - equal.vdfx
+:VAR Rv
+:DATASET Case 3.1 - equal.vdfx
+:VAR Rp
+:DATASET Case 3.1 - equal.vdfx
+:VAR Rc
+:DATASET Case 3.1 - equal.vdfx
+:VAR Rf
+:DATASET Case 3.1 - equal.vdfx
+:VAR E
+:DATASET Case 3.1 - equal.vdfx
+:VAR CE
+:DATASET Case 3.1 - equal.vdfx
+
+:TABLE scenario_3.2-_table-_equal
+:TITLE scenario_3.2-_table-_equal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 3.2 - equal.vdfx
+:VAR Rl
+:DATASET Case 3.2 - equal.vdfx
+:VAR Rv
+:DATASET Case 3.2 - equal.vdfx
+:VAR Rp
+:DATASET Case 3.2 - equal.vdfx
+:VAR Rc
+:DATASET Case 3.2 - equal.vdfx
+:VAR Rf
+:DATASET Case 3.2 - equal.vdfx
+:VAR E
+:DATASET Case 3.2 - equal.vdfx
+:VAR CE
+:DATASET Case 3.2 - equal.vdfx
+
+:TABLE scenario_4-_table-_uequal
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 4 - unequal.vdfx
+:VAR Rl
+:DATASET Case 4 - unequal.vdfx
+:VAR Rv
+:DATASET Case 4 - unequal.vdfx
+:VAR Rp
+:DATASET Case 4 - unequal.vdfx
+:VAR Rc
+:DATASET Case 4 - unequal.vdfx
+:VAR Rf
+:DATASET Case 4 - unequal.vdfx
+:VAR E
+:DATASET Case 4 - unequal.vdfx
+:VAR CE
+:DATASET Case 4 - unequal.vdfx
+
+:TABLE scenario_5-_table-_usa
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 5 - USA.vdfx
+:VAR Rl
+:DATASET Case 5 - USA.vdfx
+:VAR Rv
+:DATASET Case 5 - USA.vdfx
+:VAR Rp
+:DATASET Case 5 - USA.vdfx
+:VAR Rc
+:DATASET Case 5 - USA.vdfx
+:VAR Rf
+:DATASET Case 5 - USA.vdfx
+:VAR E
+:DATASET Case 5 - USA.vdfx
+:VAR CE
+:DATASET Case 5 - USA.vdfx
+:VAR Y
+:DATASET Case 5 - USA.vdfx
+
+:TABLE scenario_5-_table-_unequal
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 5 - unequal.vdfx
+:VAR Rl
+:DATASET Case 5 - unequal.vdfx
+:VAR Rv
+:DATASET Case 5 - unequal.vdfx
+:VAR Rp
+:DATASET Case 5 - unequal.vdfx
+:VAR Rc
+:DATASET Case 5 - unequal.vdfx
+:VAR Rf
+:DATASET Case 5 - unequal.vdfx
+:VAR E
+:DATASET Case 5 - unequal.vdfx
+:VAR CE
+:DATASET Case 5 - unequal.vdfx
+:VAR Y
+:DATASET Case 5 - unequal.vdfx
+
+:TABLE scenario_5-_table-_equal
+:TITLE scenario_4-_table-_uequal
+:PRINT-EVERY 10
+:FONT Vensim Sans|12||0-0-0
+:VAR Ro
+:DATASET Case 5 - equal.vdfx
+:VAR Rl
+:DATASET Case 5 - equal.vdfx
+:VAR Rv
+:DATASET Case 5 - equal.vdfx
+:VAR Rp
+:DATASET Case 5 - equal.vdfx
+:VAR Rc
+:DATASET Case 5 - equal.vdfx
+:VAR Rf
+:DATASET Case 5 - equal.vdfx
+:VAR E
+:DATASET Case 5 - equal.vdfx
+:VAR CE
+:DATASET Case 5 - equal.vdfx
+:VAR Y
+:DATASET Case 5 - equal.vdfx
+
+:GRAPH scenario_2-_dynamic_shares-_usa
+:TITLE scenario_2-_dynamic_shares-_usa
+:FONT Vensim Sans|11||0-0-0
+:SCALE
+:VAR Dynamic Sow|Opinion influencer role
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Slw|Lifestyle influencer role
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Svw|Voting role
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Spw|Politician role
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Scw|Consumer role
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR Dynamic Sfw|Firm-manager role
+:UNITS Women's share
+:Y-MAX 1
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_2-_CE_comparison_of_scenario_2_and1_for_usa
+:TITLE scenario_2-_CE_comparison_of_scenario_2_and1_for_usa
+:FONT Vensim Sans|12||0-0-0
+:SCALE
+:VAR CE|Basic model
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 1- USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with dynamic women's share
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_usa
+:TITLE scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_usa
+:FONT Vensim Sans|11||0-0-0
+:SCALE
+:VAR CE|Basic model
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 1- USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to opinion influencer role
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 3.1- USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to lifestyle influencer role
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 3.2- USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 3- USA.vdfx
+:LINE-COLOR 0-0-0
+:LINE-WIDTH 3
+
+:GRAPH scenario_4-_dynamic_share_and_Rp_for_unequal
+:TITLE scenario_4-_dynamic_share_and_Rp_for_unequal
+:SCALE
+:VAR Rp|Politician role - basic model
+:UNITS Politicia role
+:Y-MIN 0
+:DATASET Scenario 1- unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Politician role - case of model with political tipping point
+:UNITS Politician role
+:Y-MIN 0
+:DATASET Scenario 4- unequal.vdfx
+:LINE-WIDTH 3
+:SCALE
+:VAR Dynamic Svw|Women's share in voting role - case of model with political tipping point
+:UNITS Women's share in voting role
+:Y-MIN 0
+:DATASET Scenario 4- unequal.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_4-_CE_comparison_of_scenario_4_and1_for_unequal
+:TITLE scenario_4-_CE_comparison_of_scenario_4_and1_for_unequal
+:FONT Vensim Sans|12||0-0-0
+:SCALE
+:VAR CE|Basic model
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 1- unequal.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with political tipping point
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 4- unequal.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_5-_Rv_and_Rc_comparison_between_scenario_4_and_2-_usa
+:TITLE scenario_5-_Rv_and_Rc_comparison_between_scenario_4_and_2-_usa
+:FONT Vensim Sans|11||0-0-0
+:SCALE
+:VAR Rv|Voting role - case of model with dynamic women's share
+:UNITS Role
+:Y-MAX 100
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR Rc|Consumer role - case of model with dynamic women's share
+:UNITS Role
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Voting role - case of model with endogenous income gap
+:UNITS Role
+:DATASET Scenario 5- USA.vdfx
+:LINE-WIDTH 3
+:VAR Rc|Consumer role - case of model with endogenous income gap
+:UNITS Role
+:DATASET Scenario 5- USA.vdfx
+:LINE-COLOR 0-0-0
+:LINE-WIDTH 3
+
+:GRAPH scenario_5-_CE_comparison_of_scenario_5_and_2_for_usa
+:TITLE scenario_5-_CE_comparison_of_scenario_5_and_2_for_usa
+:FONT Vensim Sans|12||0-0-0
+:SCALE
+:VAR CE|Case of model with dynamic women's share
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 2- USA.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with endogenous income gap
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Scenario 5- USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_unequal
+:TITLE scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_usa
+:FONT Vensim Sans|11||0-0-0
+:SCALE
+:VAR CE|Basic model
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to opinion influencer role
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 3.1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to lifestyle influencer role
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 3.2 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 3 - unequal.vdfx
+:LINE-COLOR 0-0-0
+:LINE-WIDTH 3
+
+:GRAPH scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_equal_0
+:TITLE scenario_3-_CE_comparison_between_basic_model_and_three_feedbacks_3__3.1_and_3.2_for_usa
+:FONT Vensim Sans|11||0-0-0
+:SCALE
+:VAR CE|Basic model
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 1 - equal.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to opinion influencer role
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 3.1 - equal.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to lifestyle influencer role
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 3.2 - equal.vdfx
+:LINE-WIDTH 3
+:VAR CE|Case of model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Cumulative emissions (Mt CO2)
+:DATASET Case 3 - equal.vdfx
+:LINE-COLOR 0-0-0
+:LINE-WIDTH 3
+
+:GRAPH Ro-_all_cases-_usa
+:SCALE
+:VAR Ro|Basic model
+:UNITS Opinion influencer role
+:DATASET Case 1 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with dynamic women's share
+:UNITS Opinion influencer role
+:DATASET Case 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Opinion influencer role
+:DATASET Case 3 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with political tipping point
+:UNITS Opinion influencer role
+:DATASET Case 4 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with endogenous income gap
+:UNITS Opinion influencer role
+:DATASET Case 5 - USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH Ro-_all_cases-_unequal
+:TITLE Ro-_all_cases-_unequal
+:SCALE
+:VAR Ro|Basic model
+:UNITS Opinion influencer role
+:DATASET Case 1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with dynamic women's share
+:UNITS Opinion influencer role
+:DATASET Case 2 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Opinion influencer role
+:DATASET Case 3 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with political tipping point
+:UNITS Opinion influencer role
+:DATASET Case 4 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with endogenous income gap
+:UNITS Opinion influencer role
+:DATASET Case 5 - unequal (test).vdfx
+:LINE-WIDTH 3
+
+:GRAPH Ro-_all_cases-_equal
+:TITLE Ro-_all_cases-_equal
+:SCALE
+:VAR Ro|Basic model
+:UNITS Opinion influencer role
+:DATASET Case 1 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with dynamic women's share
+:UNITS Opinion influencer role
+:DATASET Case 2 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Opinion influencer role
+:DATASET Case 3 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with political tipping point
+:UNITS Opinion influencer role
+:DATASET Case 4 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Ro|Case of a model with endogenous income gap
+:UNITS Opinion influencer role
+:DATASET Case 5 - equal.vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rl-_all_cases-_usa
+:TITLE Rl-_all_cases-_usa
+:SCALE
+:VAR Rl|Basic model
+:UNITS Lifestyle influencer role
+:DATASET Case 1 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with dynamic women's share
+:UNITS Lifestyle influencer role
+:DATASET Case 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Lifestyle influencer role
+:DATASET Case 3 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with political tipping point
+:UNITS Lifestyle influencer role
+:DATASET Case 4 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with endogenous income gap
+:UNITS Lifestyle influencer role
+:DATASET Case 5 - USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rl-_all_cases-_unequal
+:TITLE Rl-_all_cases-_unequal
+:SCALE
+:VAR Rl|Basic model
+:UNITS Lifestyle influencer role
+:DATASET Case 1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with dynamic women's share
+:UNITS Lifestyle influencer role
+:DATASET Case 2 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Lifestyle influencer role
+:DATASET Case 3 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with political tipping point
+:UNITS Lifestyle influencer role
+:DATASET Case 4 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with endogenous income gap
+:UNITS Lifestyle influencer role
+:DATASET Case 5 - unequal (test).vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rl-_all_cases-_equal
+:TITLE Rl-_all_cases-_equal
+:SCALE
+:VAR Rl|Basic model
+:UNITS Lifestyle influencer role
+:DATASET Case 1 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with dynamic women's share
+:UNITS Lifestyle influencer role
+:DATASET Case 2 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Lifestyle influencer role
+:DATASET Case 3 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with political tipping point
+:UNITS Lifestyle influencer role
+:DATASET Case 4 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rl|Case of a model with endogenous income gap
+:UNITS Lifestyle influencer role
+:DATASET Case 5 - equal.vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rv-_all_cases-_usa
+:TITLE Rv-_all_cases-_usa
+:SCALE
+:VAR Rv|Basic model
+:UNITS Voting role
+:DATASET Case 1 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with dynamic women's share
+:UNITS Voting role
+:DATASET Case 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Voting role
+:DATASET Case 3 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with political tipping point
+:UNITS Voting role
+:DATASET Case 4 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with endogenous income gap
+:UNITS Voting role
+:DATASET Case 5 - USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rv-_all_cases-_unequal
+:SCALE
+:VAR Rv|Basic model
+:UNITS Voting role
+:DATASET Case 1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with dynamic women's share
+:UNITS Voting role
+:DATASET Case 2 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Voting role
+:DATASET Case 3 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with political tipping point
+:UNITS Voting role
+:DATASET Case 4 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with endogenous income gap
+:UNITS Voting role
+:DATASET Case 5 - unequal (test).vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rv-_all_cases-_equal
+:SCALE
+:VAR Rv|Basic model
+:UNITS Voting role
+:DATASET Case 1 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with dynamic women's share
+:UNITS Voting role
+:DATASET Case 2 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Voting role
+:DATASET Case 3 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with political tipping point
+:UNITS Voting role
+:DATASET Case 4 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rv|Case of a model with endogenous income gap
+:UNITS Voting role
+:DATASET Case 5 - equal.vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rp-_all_cases-_usa
+:SCALE
+:VAR Rp|Basic model
+:UNITS Politician role
+:DATASET Case 1 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with dynamic women's share
+:UNITS Politician role
+:DATASET Case 2 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Politician role
+:DATASET Case 3 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with political tipping point
+:UNITS Politician role
+:DATASET Case 4 - USA.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with endogenous income gap
+:UNITS Politician role
+:DATASET Case 5 - USA.vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rp-_all_cases-_unequal
+:SCALE
+:VAR Rp|Basic model
+:UNITS Politician role
+:DATASET Case 1 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with dynamic women's share
+:UNITS Politician role
+:DATASET Case 2 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Politician role
+:DATASET Case 3 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with political tipping point
+:UNITS Politician role
+:DATASET Case 4 - unequal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with endogenous income gap
+:UNITS Politician role
+:DATASET Case 5 - unequal (test).vdfx
+:LINE-WIDTH 3
+
+:GRAPH Rp-_all_cases-_equal
+:SCALE
+:VAR Rp|Basic model
+:UNITS Politician role
+:DATASET Case 1 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with dynamic women's share
+:UNITS Politician role
+:DATASET Case 2 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with feedback from cumulative emissions to both opinion and lifestyle influencer roles
+:UNITS Politician role
+:DATASET Case 3 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with political tipping point
+:UNITS Politician role
+:DATASET Case 4 - equal.vdfx
+:LINE-WIDTH 3
+:VAR Rp|Case of a model with endogenous income gap
+:UNITS Politician role
+:DATASET Case 5 - equal.vdfx
+:LINE-WIDTH 3
+:L<%^E!@
+1:Case 5 - unequal.vdfx
+1:Case 4 - unequal.vdfx
+1:Case 3.2 - unequal.vdfx
+1:Case 3.1 - unequal.vdfx
+1:Case 3 - unequal.vdfx
+1:Case 2 - unequal.vdfx
+1:Case 1 - unequal.vdfx
+4:Time
+5:Case switch
+9:Case 5 - unequal (test)
+19:53,0
+24:0
+25:50
+26:50
+23:0
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:0
+72:0
+73:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Vensim Sans|12||0-0-0|0-0-0|-1--1--1|0-0-0|192-192-192|-1--1--1
